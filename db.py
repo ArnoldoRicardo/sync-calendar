@@ -11,6 +11,7 @@ Session = sessionmaker(engine)
 
 Base = declarative_base()
 
+
 class DBEvent(Base):
     __tablename__ = 'events'
 
@@ -24,6 +25,7 @@ class DBEvent(Base):
     recurring = Column(Boolean)
     status = Column(String)
     google_id = Column(String)
+
 
 class Event(BaseModel):
     id: Optional[int]
@@ -39,7 +41,7 @@ class Event(BaseModel):
 
 def get_events_with_out_google_id():
     session = Session()
-    return session.query(DBEvent).filter(DBEvent.google_id == None).all()
+    return session.query(DBEvent).filter(DBEvent.google_id == None).all() # noqa
 
 
 def update_google_id(event_id: int, google_id: str):

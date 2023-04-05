@@ -69,6 +69,7 @@ async def scrape_events():
     await browser.close()
     return eventos
 
+
 async def main():
     eventos = await scrape_events()
     for evento in eventos:
@@ -81,4 +82,3 @@ async def main():
 
 
 asyncio.get_event_loop().run_until_complete(main())
-
