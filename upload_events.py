@@ -1,4 +1,4 @@
-from google.main import create_event
+from google_service.main import create_event
 from datetime import datetime, timedelta, timezone
 import logging
 import os
