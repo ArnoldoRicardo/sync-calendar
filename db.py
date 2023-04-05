@@ -22,6 +22,7 @@ class DBEvent(Base):
     organizer = Column(String)
     recurring = Column(Boolean)
     status = Column(String)
+    googleId = Column(String)
 
 class Event(BaseModel):
     day: str
@@ -33,6 +34,20 @@ class Event(BaseModel):
     recurring: bool
     status: str
 
+
+def get_events_with_out_google_id():
+    session = Session()
+    return session.query(DBEvent).filter(DBEvent.googleId == None).all()
+
+
+def update_google_id(event: DBEvent, google_id: str):
+    session = Session()
+    event.googleId = google_id
+    session.commit()
+    session.refresh(event)
+    return event
+
+
 def create_event(event: Event):
     db_event = DBEvent(**event.dict())
     session = Session()
@@ -40,11 +55,6 @@ def create_event(event: Event):
     session.commit()
     session.refresh(db_event)
     return db_event
-
-
-def get_event_by_name(name: str):
-    session = Session()
-    return session.query(DBEvent).filter(DBEvent.name == name).first()
 
 
 def update_event(event: Event):

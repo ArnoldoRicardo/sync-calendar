@@ -1,12 +1,23 @@
 import asyncio
+import logging
 from pyppeteer import launch
 import re
+import os
 
 from db import create_event, search_event, update_event, Event
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler()]
+)
+
+home_dir = os.path.expanduser('~')
+
+
 async def scrape_events():
     args = [
-        '--user-data-dir=/home/arlf0/.config/chromium/test',
+        f'--user-data-dir={home_dir}/.config/chromium/test',
         '--profile-directory=Default'
     ]
     browser = await launch(headless=False, args=args)
@@ -19,7 +30,7 @@ async def scrape_events():
     await page.waitForSelector('[aria-label^="event"]')
     events = await page.querySelectorAll('[aria-label^="event"]')
     eventos = []
-    len(events)
+    logging.info(len(events))
     for event in events:
         event_text = await page.evaluate('(element) => element.getAttribute("aria-label")', event)
 
@@ -58,8 +69,10 @@ async def main():
     eventos = await scrape_events()
     for evento in eventos:
         if search_event(evento.name, evento.day):
+            logging.info(f'El evento {evento.name} ya existe')
             update_event(evento)
         else:
+            logging.info(f'El evento {evento.name} no existe')
             create_event(evento)
 
 
