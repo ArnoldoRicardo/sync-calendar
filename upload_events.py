@@ -15,7 +15,7 @@ def main():
             name=event.name,
             start=event.start_date,
             end=event.end_date,
-            location=event.link
+            location=event.organizer
         )
         update_google_id(event.id, google_id)
 
