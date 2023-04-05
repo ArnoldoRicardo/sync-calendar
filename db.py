@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
@@ -15,19 +15,19 @@ class DBEvent(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     day = Column(String)
-    startHour = Column(String)
-    endHour = Column(String)
+    start_date = Column(DateTime)
+    end_date = Column(DateTime)
     name = Column(String)
     link = Column(String)
     organizer = Column(String)
     recurring = Column(Boolean)
     status = Column(String)
-    googleId = Column(String)
+    google_id = Column(String)
 
 class Event(BaseModel):
-    day: str
-    startHour: str
-    endHour: str
+    day: date
+    start_date: datetime
+    end_date: datetime
     name: str
     link: Optional[str]
     organizer: str
@@ -37,12 +37,12 @@ class Event(BaseModel):
 
 def get_events_with_out_google_id():
     session = Session()
-    return session.query(DBEvent).filter(DBEvent.googleId == None).all()
+    return session.query(DBEvent).filter(DBEvent.google_id == None).all()
 
 
 def update_google_id(event: DBEvent, google_id: str):
     session = Session()
-    event.googleId = google_id
+    event.google_id = google_id
     session.commit()
     session.refresh(event)
     return event
@@ -61,8 +61,8 @@ def update_event(event: Event):
     session = Session()
     db_event = session.query(DBEvent).filter(DBEvent.name == event.name).first()
     db_event.day = event.day
-    db_event.startHour = event.startHour
-    db_event.endHour = event.endHour
+    db_event.start_date = event.start_date
+    db_event.end_date = event.end_date
     db_event.link = event.link
     db_event.organizer = event.organizer
     db_event.status = event.status
