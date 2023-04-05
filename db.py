@@ -3,6 +3,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
+from datetime import datetime
 
 
 engine = create_engine('sqlite:///events.db')
@@ -25,7 +26,8 @@ class DBEvent(Base):
     google_id = Column(String)
 
 class Event(BaseModel):
-    day: date
+    id: Optional[int]
+    day: str
     start_date: datetime
     end_date: datetime
     name: str
@@ -40,12 +42,13 @@ def get_events_with_out_google_id():
     return session.query(DBEvent).filter(DBEvent.google_id == None).all()
 
 
-def update_google_id(event: DBEvent, google_id: str):
+def update_google_id(event_id: int, google_id: str):
     session = Session()
-    event.google_id = google_id
+    db_event = session.query(DBEvent).filter(DBEvent.id == event_id).first()
+    db_event.google_id = google_id
     session.commit()
-    session.refresh(event)
-    return event
+    session.refresh(db_event)
+    return db_event
 
 
 def create_event(event: Event):

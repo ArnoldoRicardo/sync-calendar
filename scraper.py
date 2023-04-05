@@ -3,6 +3,7 @@ import logging
 from pyppeteer import launch
 import re
 import os
+from datetime import datetime, timezone, timedelta
 
 from db import create_event, search_event, update_event, Event
 
@@ -39,8 +40,8 @@ async def scrape_events():
 
         if match:
             day = match.group(1)
-            start_hour = match.group(2)
-            end_hour = match.group(3)
+            start_hour = day + ', ' + match.group(2)
+            end_hour = day + ', ' + match.group(3)
             description = match.group(4).split(' location ')
             name = description[0]
             link = description[1] if len(description) > 1 else None
@@ -48,10 +49,13 @@ async def scrape_events():
             recurring = True if match.group(6) else False
             status = match.group(7)
 
+            start_hour = datetime.strptime(start_hour, '%A, %B %d, %Y, %I:%M %p')
+            end_hour = datetime.strptime(end_hour, '%A, %B %d, %Y, %I:%M %p')
+
             evento = {
                 'day': day,
-                'startHour': start_hour,
-                'endHour': end_hour,
+                'start_date': start_hour,
+                'end_date': end_hour,
                 'name': name,
                 'link': link,
                 'recurring': recurring,

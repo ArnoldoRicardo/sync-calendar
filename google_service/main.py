@@ -1,4 +1,5 @@
 from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -9,6 +10,9 @@ from datetime import datetime, timedelta, timezone
 import os
 
 
+current_path = os.path.dirname(os.path.abspath(__file__))
+
+
 def get_credentials() -> Credentials:
     SCOPES = ['https://www.googleapis.com/auth/calendar']
 
@@ -16,18 +20,18 @@ def get_credentials() -> Credentials:
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if os.path.exists(f'{current_path}/token.json'):
+        creds = Credentials.from_authorized_user_file(f'{current_path}/token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials-service.json', SCOPES)
+                f'{current_path}/credentials-service.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.json', 'w') as token:
+        with open(f'{current_path}/token.json', 'w') as token:
             token.write(creds.to_json())
 
     return creds
@@ -43,11 +47,11 @@ def create_event(name: str, start: datetime, end: datetime,
         'description': description,
         'start': {
             'dateTime': start.isoformat(),
-            'timeZone': start.tzinfo.zone,
+            'timeZone': 'America/Mexico_City',
         },
         'end': {
             'dateTime': end.isoformat(),
-            'timeZone': end.tzinfo.zone,
+            'timeZone': 'America/Mexico_City',
         },
         'reminders': {
             'useDefault': reminders,

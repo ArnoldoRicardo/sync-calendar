@@ -11,10 +11,13 @@ logging.basicConfig(level=logging.INFO)
 def main():
     events = get_events_with_out_google_id()
     for event in events:
-        start = datetime.strptime(event.day + " " + event.startHour, "%Y-%m-%d %H:%M")
-        end = datetime.strptime(event.day + " " + event.endHour, "%Y-%m-%d %H:%M")
-        google_id = create_event(event.name, start, end)
-        update_google_id(event, google_id)
+        google_id = create_event(
+            name=event.name,
+            start=event.start_date,
+            end=event.end_date,
+            location=event.link
+        )
+        update_google_id(event.id, google_id)
 
 
 if __name__ == "__main__":
