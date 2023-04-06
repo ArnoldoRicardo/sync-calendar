@@ -1,7 +1,7 @@
-from google_service.main import create_event
 import logging
-from db import get_events_with_out_google_id, update_google_id
 
+from db import get_events_with_out_google_id, update_google_id
+from google_service.main import create_event
 
 logging.basicConfig(level=logging.INFO)
 
@@ -13,7 +13,7 @@ def main():
             name=event.name,
             start=event.start_date,
             end=event.end_date,
-            location=event.organizer
+            location=event.organizer,
         )
         update_google_id(event.id, google_id)
 

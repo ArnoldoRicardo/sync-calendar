@@ -1,19 +1,19 @@
-from typing import Optional
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
+from pydantic import BaseModel
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-engine = create_engine('sqlite:///events.db')
+engine = create_engine("sqlite:///events.db")
 Session = sessionmaker(engine)
 
 Base = declarative_base()
 
 
 class DBEvent(Base):
-    __tablename__ = 'events'
+    __tablename__ = "events"
 
     id = Column(Integer, primary_key=True, index=True)
     day = Column(String)
@@ -25,6 +25,7 @@ class DBEvent(Base):
     recurring = Column(Boolean)
     status = Column(String)
     google_id = Column(String)
+    outlook_id = Column(String)
 
 
 class Event(BaseModel):
@@ -37,11 +38,18 @@ class Event(BaseModel):
     organizer: str
     recurring: bool
     status: str
+    google_id: Optional[str]
+    outlook_id: Optional[str]
+
+
+def get_events_by_outlook_id(outlook_id: str):
+    session = Session()
+    return session.query(DBEvent).filter(DBEvent.outlook_id == outlook_id).first()
 
 
 def get_events_with_out_google_id():
     session = Session()
-    return session.query(DBEvent).filter(DBEvent.google_id == None).all() # noqa
+    return session.query(DBEvent).filter(DBEvent.google_id == None).all()  # noqa
 
 
 def update_google_id(event_id: int, google_id: str):
@@ -78,7 +86,9 @@ def update_event(event: Event):
 
 def search_event(name: str, day: str):
     session = Session()
-    return session.query(DBEvent).filter(DBEvent.name == name, DBEvent.day == day).first()
+    return (
+        session.query(DBEvent).filter(DBEvent.name == name, DBEvent.day == day).first()
+    )
 
 
 Base.metadata.create_all(bind=engine)
