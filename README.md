@@ -18,3 +18,5 @@ and then you need upload this events to google calendar
 ```
     python upload_events.py
 ```
+
+python outlook_win32.py
