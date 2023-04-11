@@ -19,8 +19,12 @@ and then you need upload this events to google calendar
     python upload_events.py
 ```
 
+
+## scraper de windows application
+
 python outlook_win32.py
 
+### schedule
 
 for schedule outlook_win32 you need to use download_calendar.bat
 
@@ -52,3 +56,15 @@ Get-ScheduledTask -TaskName "Nombre de la tarea"
 Este comando debería mostrar información sobre la tarea programada que acaba de crear.
 
 Con estos pasos, habrá creado una tarea programada en su sistema que ejecutará su archivo .bat a las 9am todos los días. Si necesita hacer ajustes a la hora de ejecución o la frecuencia, puede cambiar los valores de los parámetros en el primer comando.
+
+### get info
+
+ejecutar la tarea
+```
+Start-ScheduledTask -TaskName "Outlook"
+```
+
+obtener informacion de la tarea
+```
+Get-ScheduledTaskInfo -TaskName "Outlook"
+```
